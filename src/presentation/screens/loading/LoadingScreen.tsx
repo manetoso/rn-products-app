@@ -1,20 +1,21 @@
+import { Spinner } from '@ui-kitten/components';
 import React, { FC } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 interface Props {}
 
 export const LoadingScreen: FC<Props> = () => {
-	return (
-		<View style={styles.container}>
-			<Text>LoadingScreen</Text>
-		</View>
-	);
+  return (
+    <View style={styles.container}>
+      <Spinner status="primary" size="large" />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
