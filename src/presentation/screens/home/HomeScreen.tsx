@@ -1,26 +1,39 @@
-import { Button, Icon } from '@ui-kitten/components';
 import React, { FC } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useAuthStore } from '../../store/auth/useAuthStore';
+import { useInfiniteQuery } from '@tanstack/react-query';
+
+import { MainLayout } from '../../layouts/MainLayout';
+import { FullScreenLoader } from '../../components/ui/FullScreenLoader';
+import { ProductList } from '../../components/products/ProductList';
+
+import { getProductsByPage } from '../../../actions/products/get-products-by-page';
 
 interface Props {}
 
 export const HomeScreen: FC<Props> = () => {
-  const { logout } = useAuthStore();
+  // const { isLoading, data: products = [] } = useQuery({
+  //   queryKey: ['products', 'infinite'],
+  //   staleTime: 1000 * 60 * 60, // 1hr,
+  //   queryFn: () => getProductsByPage(0),
+  // });
+  // HERE data IS AND ARRAY OF ARRAYS: [[p1,p2,p3],[p4,p5,p6]]
+  const { isLoading, data, fetchNextPage } = useInfiniteQuery({
+    queryKey: ['products', 'infinite'],
+    staleTime: 1000 * 60 * 60, // 1hr,
+    initialPageParam: 0,
+    queryFn: async params => await getProductsByPage(params.pageParam),
+    getNextPageParam: (lastPage, allPages) => allPages.length,
+  });
   return (
-    <View style={styles.container}>
-      <Text>HomeScreen</Text>
-      <Button accessoryLeft={<Icon name="log-out-outline" />} onPress={logout}>
-        Cerrar sesión
-      </Button>
-    </View>
+    <MainLayout
+      title="TesloShop - Products"
+      // rightAction={logout}
+      // rightActionIcon="log-out-outline"
+      subtitle="Administrative App">
+      {isLoading ? (
+        <FullScreenLoader />
+      ) : (
+        <ProductList products={data?.pages.flat() ?? []} fetchNextPage={fetchNextPage} />
+      )}
+    </MainLayout>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
