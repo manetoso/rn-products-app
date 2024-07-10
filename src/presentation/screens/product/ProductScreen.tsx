@@ -1,22 +1,19 @@
 import React, { FC, useRef } from 'react';
-import { FlatList, ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { Button, ButtonGroup, Input, Layout, Text, useTheme } from '@ui-kitten/components';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Formik } from 'formik';
 
-import { getProductById } from '../../../actions/products/get-product-by-id';
-import { updateCreateProduct } from '../../../actions/products/update-create-product';
-import { Size, Gender, type Product } from '../../../domain/entities/product';
-import { FadeInImage } from '../../components/ui/FadeInImage';
+import { genders, sizes } from '../../../config/constants/constants';
+import { getProductById, updateCreateProduct } from '../../../actions/products';
 import { CustomIcon } from '../../components/ui/CustomIcon';
+import { ProductImageSlideShow } from '../../components/products';
 import { MainLayout } from '../../layouts/MainLayout';
 import { LoadingScreen } from '..';
 
 import type { NativeStackScreenProps } from 'react-native-screens/lib/typescript/native-stack/types';
+import type { Product } from '../../../domain/entities/product';
 import type { RootStackParams } from '../../navigation/StackNavigator';
-
-const sizes: Size[] = [Size.Xs, Size.S, Size.M, Size.L, Size.Xl, Size.Xxl];
-const genders: Gender[] = [Gender.Kid, Gender.Women, Gender.Men, Gender.Unisex];
 
 interface Props extends NativeStackScreenProps<RootStackParams, 'ProductScreen'> {}
 
@@ -61,13 +58,7 @@ export const ProductScreen: FC<Props> = ({ route }) => {
         <MainLayout title={values.title} subtitle={`$${values.price}`}>
           <ScrollView style={styles.container}>
             <Layout>
-              <FlatList
-                data={values.images}
-                keyExtractor={item => item}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                renderItem={({ item }) => <FadeInImage uri={item} style={styles.image} />}
-              />
+              <ProductImageSlideShow images={values.images} />
             </Layout>
             <Layout style={styles.wrapper}>
               <Input
@@ -155,7 +146,6 @@ export const ProductScreen: FC<Props> = ({ route }) => {
               style={styles.buttonGroup}>
               Save
             </Button>
-            <Text>{JSON.stringify(values, null, 2)}</Text>
             <Layout style={styles.footer} />
           </ScrollView>
         </MainLayout>
@@ -167,11 +157,6 @@ export const ProductScreen: FC<Props> = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  image: {
-    width: 300,
-    height: 300,
-    marginHorizontal: 7,
   },
   wrapper: {
     paddingHorizontal: 10,
